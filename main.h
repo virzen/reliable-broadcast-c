@@ -10,12 +10,12 @@
 #include <string.h>
 #include <pthread.h>
 /* odkomentować, jeżeli się chce DEBUGI */
-//#define DEBUG 
+//#define DEBUG
 /* boolean */
 #define TRUE 1
 #define FALSE 0
 
-#define STATE_CHANGE_PROB 50
+#define STATE_CHANGE_PROB 10
 #define SEC_IN_STATE 2
 
 #define ROOT 0
@@ -41,8 +41,8 @@ extern MPI_Datatype MPI_PAKIET_T;
 #define INMONITOR 4
 
 /* macro debug - działa jak printf, kiedy zdefiniowano
-   DEBUG, kiedy DEBUG niezdefiniowane działa jak instrukcja pusta 
-   
+   DEBUG, kiedy DEBUG niezdefiniowane działa jak instrukcja pusta
+
    używa się dokładnie jak printfa, tyle, że dodaje kolorków i automatycznie
    wyświetla rank
 

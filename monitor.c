@@ -9,11 +9,11 @@ void *startMonitor(void *ptr)
     int newline;
 
     while (stan != InFinish) {
-        debug("sobie monitoruję");
+        debug("Monitorowanie...");
 
         fgets(instring, 99, stdin);
         newline = strcspn(instring, "\n");
-        instring[newline] = 0; 
+        instring[newline] = 0;
 
         debug("string %s\n", instring);
         token = strtok_r(instring, " ", &saveptr);
@@ -28,13 +28,13 @@ void *startMonitor(void *ptr)
             int i;
             for (i=0;i<size;i++)
                 sendPacket(0,i,INMONITOR);
-        } 
+        }
         else if ((strcmp(token,"resume")==0) || (strcmp(token,"run")==0)) {
             int i;
-            for (i=0;i<size;i++) { 
+            for (i=0;i<size;i++) {
                 sendPacket(0,i,INRUN);
             }
-        } 
+        }
         else if (strcmp(token,"send")==0) {
             token = strtok_r(0, " ", &saveptr);
 
@@ -53,7 +53,7 @@ void *startMonitor(void *ptr)
             if (token) {
                 if ((strcmp(token,"app") == 0) || (strcmp(token,"appmsg") == 0)) {
                     type = APPMSG;
-                } 
+                }
                 else if (strcmp(token,"finish")==0) {
                     type = FINISH;
                 }
@@ -62,19 +62,21 @@ void *startMonitor(void *ptr)
             token = strtok_r(0, " ", &saveptr);
             printf("TOK 3 %s\n", token);
 
-            if (token){ 
+            if (token){
                 data = atoi(token);
             }
-            
-            debug( "wysyłam typ %d do %d z danymi %d", type, i, data);
+
+            debug("Wysyłanie typy %d do %d z danymi %d...", type, i, data);
 
             packet_t *pkt = malloc(sizeof(packet_t));
             pkt->data=data;
 
             sendPacket(pkt,i,type);
 
+            debug("Wysłano.")
+
             free(pkt);
-        } 
+        }
     }
     free(instring);
 }

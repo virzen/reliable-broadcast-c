@@ -5,21 +5,23 @@ void mainLoop()
 {
     srandom(rank);
     while (stan != InFinish) {
-        int perc = random() % 100; 
+        int perc = random() % 100;
 
         if (perc < STATE_CHANGE_PROB && stan == InRun) {
-            debug("Zmieniam stan na wysyłanie");
+            debug("Wysylanie...");
 
             changeState(InSend);
 
             packet_t *pkt = malloc(sizeof(packet_t));
             pkt->data = perc;
 
-            sendPacket(pkt, (rank+1) % size, APPMSG);
+            int receiver = (rank+1) % size;
+
+            sendPacket(pkt, receiver, APPMSG);
+
+            debug("Wysłano %d do %d.", pkt->data, receiver);
 
             changeState(InRun);
-
-            debug("Skończyłem wysyłać");
         }
 
         sleep(SEC_IN_STATE);

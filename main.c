@@ -51,6 +51,8 @@ void check_thread_support(int provided)
 */
 void inicjuj(int *argc, char ***argv)
 {
+    debug("Inicjalizacja programu...");
+
     int provided;
     MPI_Init_thread(argc, argv,MPI_THREAD_MULTIPLE, &provided);
     check_thread_support(provided);
@@ -83,7 +85,7 @@ void inicjuj(int *argc, char ***argv)
         pthread_create(&threadMon, NULL, startMonitor, 0);
     }
 
-    debug("jestem");
+    debug("Zainicializowano.");
 }
 
 /* usunięcie zamkków, czeka, aż zakończy się drugi wątek, zwalnia przydzielony typ MPI_PAKIET_T
@@ -94,7 +96,7 @@ void finalizuj()
     pthread_mutex_destroy(&stateMut);
 
     /* Czekamy, aż wątek potomny się zakończy */
-    println("czekam na wątek \"komunikacyjny\"\n" );
+    println("Oczekiwanie na watek komunikacyjny...");
     pthread_join(threadKom,NULL);
 
     if (rank == 0) {
@@ -103,6 +105,8 @@ void finalizuj()
 
     MPI_Type_free(&MPI_PAKIET_T);
     MPI_Finalize();
+
+    println("Zakończono.");
 }
 
 
