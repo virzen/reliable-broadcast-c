@@ -127,10 +127,10 @@ void changeState( state_t newState )
 {
     pthread_mutex_lock( &stateMut );
 
-    if (stan != inFinish) {
+    if (stan != InFinish) {
         stan = newState;
     }
-    
+
     pthread_mutex_unlock( &stateMut );
 }
 
