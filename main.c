@@ -22,27 +22,27 @@ void check_thread_support(int provided)
 {
     printf("THREAD SUPPORT: %d\n", provided);
     switch (provided) {
-        case MPI_THREAD_SINGLE: 
+        case MPI_THREAD_SINGLE:
             printf("Brak wsparcia dla wątków, kończę\n");
             fprintf(stderr, "Brak wystarczającego wsparcia dla wątków - wychodzę!\n");
             MPI_Finalize();
             exit(-1);
             break;
 
-        case MPI_THREAD_FUNNELED: 
+        case MPI_THREAD_FUNNELED:
             printf("tylko te wątki, ktore wykonaly mpi_init_thread mogą wykonać wołania do biblioteki mpi\n");
             break;
 
-        case MPI_THREAD_SERIALIZED: 
+        case MPI_THREAD_SERIALIZED:
             /* Potrzebne zamki wokół wywołań biblioteki MPI */
             printf("tylko jeden watek naraz może wykonać wołania do biblioteki MPI\n");
             break;
 
-        case MPI_THREAD_MULTIPLE: 
+        case MPI_THREAD_MULTIPLE:
             printf("Pełne wsparcie dla wątków\n");
             break;
 
-        default: 
+        default:
             printf("Nikt nic nie wie\n");
     }
 }
@@ -65,7 +65,7 @@ void inicjuj(int *argc, char ***argv)
     int blocklengths[3] = {1,1,1};
     MPI_Datatype typy[3] = {MPI_INT, MPI_INT, MPI_INT};
 
-    MPI_Aint offsets[3]; 
+    MPI_Aint offsets[3];
     offsets[0] = offsetof(packet_t, ts);
     offsets[1] = offsetof(packet_t, src);
     offsets[2] = offsetof(packet_t, data);
@@ -97,7 +97,7 @@ void finalizuj()
     println("czekam na wątek \"komunikacyjny\"\n" );
     pthread_join(threadKom,NULL);
 
-    if (rank == 0) { 
+    if (rank == 0) {
         pthread_join(threadMon,NULL);
     }
 
@@ -110,7 +110,7 @@ void sendPacket(packet_t *pkt, int destination, int tag)
 {
     int freepkt=0;
 
-    if (pkt==0) { 
+    if (pkt==0) {
         pkt = malloc(sizeof(packet_t));
         freepkt = 1;
     }
