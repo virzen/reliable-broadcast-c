@@ -39,6 +39,11 @@ extern MPI_Datatype MPI_PAKIET_T;
 #define APPMSG 2
 #define INRUN 3
 #define INMONITOR 4
+#define BROADCAST_PASSIVELY 5
+#define BROADCAST_ACTIVELY 6
+#define PASSIVE_BROADCAST 7
+#define ACTIVE_BROADCAST 8
+#define DEATH 9
 
 /* macro debug - działa jak printf, kiedy zdefiniowano
    DEBUG, kiedy DEBUG niezdefiniowane działa jak instrukcja pusta

@@ -54,6 +54,12 @@ void *startMonitor(void *ptr)
                 if ((strcmp(token,"app") == 0) || (strcmp(token,"appmsg") == 0)) {
                     type = APPMSG;
                 }
+                else if ((strcmp(token,"active") == 0)) {
+                    type = BROADCAST_ACTIVELY;
+                }
+                else if (strcmp(token,"passive") == 0) {
+                    type = BROADCAST_PASSIVELY;
+                }
                 else if (strcmp(token,"finish")==0) {
                     type = FINISH;
                 }
@@ -66,14 +72,12 @@ void *startMonitor(void *ptr)
                 data = atoi(token);
             }
 
-            debug("Wysyłanie typy %d do %d z danymi %d...", type, i, data);
+            debug("Wysyłanie typu %d do %d z danymi %d...", type, i, data);
 
             packet_t *pkt = malloc(sizeof(packet_t));
             pkt->data=data;
 
             sendPacket(pkt,i,type);
-
-            debug("Wysłano.")
 
             free(pkt);
         }
