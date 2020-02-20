@@ -21,57 +21,69 @@ void bestEffortBroadcast(int data, int tag) {
   free(pkt);
 }
 
-void broadcastPassive(int data) {
-  bestEffortBroadcast(data, PASSIVE_BROADCAST);
-}
-
-void broadcastActive(int data) {
-  bestEffortBroadcast(data, ACTIVE_BROADCAST);
-}
-
 void die() {
   bestEffortBroadcast(0, DEATH);
   debug("Umieram...");
 }
 
-void sendPassiveAndDie(int data) {
-  int randomReceiver = random() * size;
-
-  packet_t* pkt = createPacket(data);
-
-  sendPacket(pkt, randomReceiver, PASSIVE_BROADCAST);
-
-  die(size, rank);
-}
-
-void sendActiveAndDie(int data) {
-  int randomReceiver = random() * size;
-
-  packet_t* pkt = createPacket(data);
-
-  sendPacket(pkt, randomReceiver, ACTIVE_BROADCAST);
-
-  die(size, rank);
-}
-
-
-int lastReceivedActive = -1;
+int lastReceived = -1;
 
 void markAsReceived(int data) {
-    lastReceivedActive = data;
+    lastReceived = data;
 }
 
 int hasBeenReceived(int data) {
-    return lastReceivedActive == data;
+    return lastReceived == data;
 }
 
-const int CHANCE_OF_DEATH = 50;
+const int CHANCE_OF_DEATH = 20;
+
+void bestEffortBroadcastWithDying(int data, int tag) {
+  packet_t* pkt = createPacket(data);
+
+  for (int receiver = 0; receiver < size; receiver++) {
+    if (receiver != rank) {
+
+      if ((random() % 100) < CHANCE_OF_DEATH) {
+        die();
+        break;
+      }
+
+      sendPacket(pkt, receiver, tag);
+    }
+  }
+
+  free(pkt);
+}
+
+
+void schedule(packet_t pkt, int* scheduled) {
+    scheduled[pkt.src] = pkt.data;
+}
+
+int getScheduledData(packet_t pkt, int* scheduled) {
+    return scheduled[pkt.src];
+}
+
+int isScheduled(packet_t pkt, int* scheduled) {
+    return scheduled[pkt.src] != -1;
+}
+
+void unschedule(packet_t pkt, int* scheduled) {
+    scheduled[pkt.src] = -1;
+}
 
 void *startKomWatek(void *ptr)
 {
     MPI_Status status;
     int is_message = FALSE;
     packet_t pkt;
+    int* scheduled = malloc(sizeof(int)*(size - 1));
+
+    for (int i = 0; i < size; i++) {
+      scheduled[i] = -1;
+    }
+
 
     /* Obrazuje pętlę odbierającą pakiety o różnych typach */
     while (stan != InFinish) {
@@ -97,39 +109,47 @@ void *startKomWatek(void *ptr)
                 debug("Autonomiczne podejmowanie decyzji rozpoczete.");
                 break;
 
-            case BROADCAST_PASSIVELY:
-                debug("Teraz rozpoczalbym pasywne rozglaszanie...")
-                break;
-
             case BROADCAST_ACTIVELY:
-                debug("Inicjuje rozglaszanie aktywne %d", pkt.data);
-                bestEffortBroadcast(pkt.data, ACTIVE_BROADCAST);
+                debug("Inicjuje rozglaszanie aktywne wartości %d", pkt.data);
                 markAsReceived(pkt.data);
-                if (perc < CHANCE_OF_DEATH) {
-                  die();
-                }
-                break;
-
-            case PASSIVE_BROADCAST:
-                debug("rozgloszenie PASYWNE (%d) od %d.", pkt.data, pkt.src);
+                bestEffortBroadcastWithDying(pkt.data, ACTIVE_BROADCAST);
                 break;
 
             case ACTIVE_BROADCAST:
                 if (!hasBeenReceived(pkt.data)) {
                   debug("Dostalem %d aktywnie", pkt.data);
-                  bestEffortBroadcast(pkt.data, ACTIVE_BROADCAST);
                   markAsReceived(pkt.data);
-                  if (perc < CHANCE_OF_DEATH) {
-                    die();
-                  }
+                  bestEffortBroadcastWithDying(pkt.data, ACTIVE_BROADCAST);
                 }
                 else {
                   debug("Dostalem %d po raz kolejny, ignoruje", pkt.data);
                 }
                 break;
 
+            case BROADCAST_PASSIVELY:
+                debug("Inicjuje rozglaszanie pasywne wartości %d", pkt.data);
+                markAsReceived(pkt.data);
+                bestEffortBroadcastWithDying(pkt.data, PASSIVE_BROADCAST);
+                break;
+
+            case PASSIVE_BROADCAST:
+                if (!hasBeenReceived(pkt.data)) {
+                  debug("Rozgloszenie pasywne wartosci %d od %d, kolejkuje.", pkt.data, pkt.src);
+                  schedule(pkt, scheduled);
+                  markAsReceived(pkt.data);
+                }
+                else {
+                  debug("Dostalem %d ponownie, ignoruje", pkt.data);
+                }
+                break;
+
             case DEATH:
-                debug("%d umarl.", pkt.src);
+                if (isScheduled(pkt, scheduled)) {
+                  debug("Rozglaszam pasywnie wiadomosc %d od niepoprawnego %d.", pkt.data, pkt.src);
+                  int scheduledData = getScheduledData(pkt, scheduled);
+                  unschedule(pkt, scheduled);
+                  bestEffortBroadcastWithDying(scheduledData, PASSIVE_BROADCAST);
+                }
                 break;
         }
     }
