@@ -205,7 +205,7 @@ void *startKomWatek(void *ptr)
                 if (!is_delivered(pkt.data, delivered_active)) {
                   debug("Dostalem %d od %d nadane przez %d.", pkt.data, pkt.src, pkt.origin);
                   add_to_delivered(pkt.data, delivered_active, &next_active_index);
-                  bestEffortBroadcast2WithDying(&pkt, ACTIVE_BROADCAST);
+                  bestEffortBroadcast2(&pkt, ACTIVE_BROADCAST);
                 }
                 else {
                   debug("Dostalem %d po raz kolejny, ignoruje", pkt.data);
@@ -215,7 +215,7 @@ void *startKomWatek(void *ptr)
             case BROADCAST_PASSIVELY:
                 debug("Inicjuje rozglaszanie pasywne wartości %d", pkt.data);
                 broadcastPacket = createBroadcastPacket(pkt.data, rank);
-                bestEffortBroadcast2(broadcastPacket, PASSIVE_BROADCAST);
+                bestEffortBroadcast2WithDying(broadcastPacket, PASSIVE_BROADCAST);
                 break;
 
             case PASSIVE_BROADCAST:
