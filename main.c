@@ -63,14 +63,15 @@ void inicjuj(int *argc, char ***argv)
        brzydzimy się czymś w rodzaju MPI_Send(&typ, sizeof(pakiet_t), MPI_BYTE....
     */
     /* sklejone z stackoverflow */
-    const int nitems = 3; /* bo packet_t ma trzy pola */
-    int blocklengths[3] = {1,1,1};
-    MPI_Datatype typy[3] = {MPI_INT, MPI_INT, MPI_INT};
+    const int nitems = 4; /* bo packet_t ma trzy pola */
+    int blocklengths[4] = {1,1,1,1};
+    MPI_Datatype typy[4] = {MPI_INT, MPI_INT, MPI_INT, MPI_INT};
 
-    MPI_Aint offsets[3];
+    MPI_Aint offsets[4];
     offsets[0] = offsetof(packet_t, ts);
     offsets[1] = offsetof(packet_t, src);
     offsets[2] = offsetof(packet_t, data);
+    offsets[3] = offsetof(packet_t, origin);
 
     MPI_Type_create_struct(nitems, blocklengths, offsets, typy, &MPI_PAKIET_T);
     MPI_Type_commit(&MPI_PAKIET_T);

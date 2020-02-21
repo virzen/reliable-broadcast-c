@@ -236,9 +236,6 @@ void *startKomWatek(void *ptr)
             case DEATH:
                 mark_incorrect(pkt.src, correct);
 
-                debug("Proces %d umarl.", pkt.src);
-                debug("%d", from[pkt.src]);
-
                 int data = from[pkt.src];
                 if (data != -1) {
                   debug("Rozglaszam pasywnie wiadomosc %d od procesu %d uleglego awarii.", data, pkt.src);
