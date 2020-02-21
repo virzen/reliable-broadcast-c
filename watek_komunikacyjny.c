@@ -56,6 +56,7 @@ void bestEffortBroadcast2WithDying(packet_t* pkt, int tag) {
         break;
       }
 
+      debug("Sle wiadomosci do %d.", receiver);
       sendPacket(pkt, receiver, tag);
     }
   }
@@ -202,7 +203,7 @@ void *startKomWatek(void *ptr)
 
             case ACTIVE_BROADCAST:
                 if (!is_delivered(pkt.data, delivered_active)) {
-                  debug("Dostalem %d aktywnie", pkt.data);
+                  debug("Dostalem %d od %d nadane przez %d.", pkt.data, pkt.src, pkt.origin);
                   add_to_delivered(pkt.data, delivered_active, &next_active_index);
                   bestEffortBroadcast2WithDying(&pkt, ACTIVE_BROADCAST);
                 }
