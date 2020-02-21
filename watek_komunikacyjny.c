@@ -3,7 +3,7 @@
 #include "watek_komunikacyjny.h"
 
 
-const int CHANCE_OF_DEATH = 10;
+const int CHANCE_OF_DEATH = 20;
 
 packet_t* createPacket(data) {
   packet_t *pkt = malloc(sizeof(packet_t));
