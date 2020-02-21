@@ -164,6 +164,8 @@ void *startKomWatek(void *ptr)
     bool* correct = init_correct();
     int* delivered_passive = init_delivered();
     int next_passive_index = 0;
+    int* delivered_active = init_delivered();
+    int next_active_index = 0;
     int* from = init_from();
 
     /* Obrazuje pętlę odbierającą pakiety o różnych typach */
@@ -192,15 +194,17 @@ void *startKomWatek(void *ptr)
 
             case BROADCAST_ACTIVELY:
                 debug("Inicjuje rozglaszanie aktywne wartości %d", pkt.data);
-                markAsReceived(pkt.data);
-                bestEffortBroadcastWithDying(pkt.data, ACTIVE_BROADCAST);
+
+                add_to_delivered(pkt.data, delivered_active, &next_active_index);
+                broadcastPacket = createBroadcastPacket(pkt.data, rank);
+                bestEffortBroadcast2(broadcastPacket, ACTIVE_BROADCAST);
                 break;
 
             case ACTIVE_BROADCAST:
-                if (!hasBeenReceived(pkt.data)) {
+                if (!is_delivered(pkt.data, delivered_active)) {
                   debug("Dostalem %d aktywnie", pkt.data);
-                  markAsReceived(pkt.data);
-                  bestEffortBroadcastWithDying(pkt.data, ACTIVE_BROADCAST);
+                  add_to_delivered(pkt.data, delivered_active, &next_active_index);
+                  bestEffortBroadcast2(&pkt, ACTIVE_BROADCAST);
                 }
                 else {
                   debug("Dostalem %d po raz kolejny, ignoruje", pkt.data);
