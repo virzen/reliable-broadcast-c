@@ -197,14 +197,14 @@ void *startKomWatek(void *ptr)
 
                 add_to_delivered(pkt.data, delivered_active, &next_active_index);
                 broadcastPacket = createBroadcastPacket(pkt.data, rank);
-                bestEffortBroadcast2(broadcastPacket, ACTIVE_BROADCAST);
+                bestEffortBroadcast2WithDying(broadcastPacket, ACTIVE_BROADCAST);
                 break;
 
             case ACTIVE_BROADCAST:
                 if (!is_delivered(pkt.data, delivered_active)) {
                   debug("Dostalem %d aktywnie", pkt.data);
                   add_to_delivered(pkt.data, delivered_active, &next_active_index);
-                  bestEffortBroadcast2(&pkt, ACTIVE_BROADCAST);
+                  bestEffortBroadcast2WithDying(&pkt, ACTIVE_BROADCAST);
                 }
                 else {
                   debug("Dostalem %d po raz kolejny, ignoruje", pkt.data);
