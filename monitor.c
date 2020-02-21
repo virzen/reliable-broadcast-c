@@ -63,6 +63,9 @@ void *startMonitor(void *ptr)
                 else if (strcmp(token,"finish")==0) {
                     type = FINISH;
                 }
+                else if (strcmp(token,"die")==0) {
+                    type = DIE;
+                }
             }
 
             token = strtok_r(0, " ", &saveptr);

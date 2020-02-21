@@ -29,6 +29,7 @@ extern int size;
 typedef struct {
     int ts;       /* timestamp (zegar lamporta */
     int src;      /* pole nie przesyłane, ale ustawiane w main_loop */
+    int origin;
 
     int data;     /* przykładowe pole z danymi; można zmienić nazwę na bardziej pasującą */
 } packet_t;
@@ -44,6 +45,7 @@ extern MPI_Datatype MPI_PAKIET_T;
 #define PASSIVE_BROADCAST 7
 #define ACTIVE_BROADCAST 8
 #define DEATH 9
+#define DIE 10
 
 /* macro debug - działa jak printf, kiedy zdefiniowano
    DEBUG, kiedy DEBUG niezdefiniowane działa jak instrukcja pusta
